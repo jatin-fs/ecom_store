@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Brand;
+use App\Models\Category;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -15,6 +16,7 @@ class AdminController extends Controller
     {
         return view('admin.index');
     }
+
     public function brands()
     {
         $brands = Brand::orderBy('id', 'desc')->paginate(10);
@@ -86,7 +88,7 @@ class AdminController extends Controller
         $brand->delete();
         return redirect()->route('admin.brands')->with('status', 'Record has been deleted successfully !');
     }
-    
+
     public function GenrateBrandThumbnailsIMage($image, $imageName)
     {
         $destinationPath = public_path('uploads/brands');
@@ -95,5 +97,88 @@ class AdminController extends Controller
         $img->resize(124, 124, function ($constraint) {
             $constraint->aspectRatio();
         })->save($destinationPath . '/' . $imageName);
+    }
+
+    public function categories()
+    {
+        $categories = Category::orderBy('id', 'desc')->paginate(10);
+        return view("admin.categories", compact('categories'), [$categories]);
+    }
+
+    public function add_category()
+    {
+        return view("admin.category-add");
+    }
+
+    public function add_category_store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'slug' => 'required|unique:categories,slug',
+            'image' => 'mimes:png,jpg,jpeg|max:2048'
+        ]);
+
+        $category = new Category();
+        $category->name = $request->name;
+        $category->slug = Str::slug($request->name);
+        $image = $request->file('image');
+        $file_extention = $request->file('image')->extension();
+        $file_name = Carbon::now()->timestamp . '.' . $file_extention;
+        $this->GenerateCategoryThumbailImage($image, $file_name);
+        $category->image = $file_name;
+        $category->save();
+        return redirect()->route('admin.categories')->with('status', 'Record has been added successfully !');
+    }
+
+    public function GenerateCategoryThumbailImage($image, $imageName)
+    {
+        $destinationPath = public_path('uploads/categories');
+        $img = Image::read($image->path());
+        $img->cover(124, 124, "top");
+        $img->resize(124, 124, function ($constraint) {
+            $constraint->aspectRatio();
+        })->save($destinationPath . '/' . $imageName);
+    }
+
+
+    public function edit_category($id)
+    {
+        $category = Category::find($id);
+        return view('admin.category-edit', compact('category'));
+    }
+
+    public function update_category(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'slug' => 'required|unique:categories,slug,' . $request->id,
+            'image' => 'mimes:png,jpg,jpeg|max:2048'
+        ]);
+
+        $category = Category::find($request->id);
+        $category->name = $request->name;
+        $category->slug = $request->slug;
+        if ($request->hasFile('image')) {
+            if (File::exists(public_path('uploads/categories') . '/' . $category->image)) {
+                File::delete(public_path('uploads/categories') . '/' . $category->image);
+            }
+            $image = $request->file('image');
+            $file_extention = $request->file('image')->extension();
+            $file_name = Carbon::now()->timestamp . '.' . $file_extention;
+            $this->GenerateCategoryThumbailImage($image, $file_name);
+            $category->image = $file_name;
+        }
+        $category->save();
+        return redirect()->route('admin.categories')->with('status', 'Record has been updated successfully !');
+    }
+
+    public function delete_category($id)
+    {
+        $category = Category::find($id);
+        if (File::exists(public_path('uploads/categories') . '/' . $category->image)) {
+            File::delete(public_path('uploads/categories') . '/' . $category->image);
+        }
+        $category->delete();
+        return redirect()->route('admin.categories')->with('status', 'Record has been deleted successfully !');
     }
 }
