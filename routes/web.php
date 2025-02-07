@@ -4,12 +4,17 @@ use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ShopController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AuthAdmin;
 
 Auth::routes();
 
 Route::get('/', [HomeController::class, 'index'])->name('home.index');
+Route::get('/home', function () {
+    return redirect()->route('home.index');
+});
+Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
 
 Route::middleware('auth')->group(function () {
     Route::get('/account-dashboard', [UserController::class, 'index'])->name('user.index');
@@ -37,9 +42,7 @@ Route::middleware('auth', AuthAdmin::class)->group(function () {
     Route::post('/admin/product/store', [AdminController::class, 'product_store'])->name('admin.product.store');
     Route::get('/admin/product/{id}/edit', [AdminController::class, 'edit_product'])->name('admin.product.edit');
     Route::put('/admin/product/update', [AdminController::class, 'update_product'])->name('admin.product.update');
-    Route::delete('/admin/product/{id}/delete',[AdminController::class,'product_delete'])->name('admin.product.delete');
+    Route::delete('/admin/product/{id}/delete', [AdminController::class, 'product_delete'])->name('admin.product.delete');
 });
 
-Route::get('/home', function () {
-    return redirect()->route('home.index');
-});
+
