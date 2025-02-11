@@ -103,23 +103,23 @@
 @endsection
 
 @push('scripts')
-    <script>
-        $(function(){
-            $(".delete").on('click',function(e){
-                e.preventDefault();
-                var selectedForm = $(this).closest('form');
-                swal({
-                    title: "Are you sure?",
-                    text: "You want to delete this record?",
-                    type: "warning",
-                    buttons: ["No!", "Yes!"],
-                    confirmButtonColor: '#dc3545'
-                }).then(function (result) {
-                    if (result) {
-                        selectedForm.submit();  
-                    }
-                });                             
+<script>
+    $(function() {
+        $(".delete").on('click', function(e) {
+            e.preventDefault();
+            var selectedForm = $(this).closest('form');
+            swal({
+                title: "Are you sure?",
+                text: "You want to delete this record?",
+                type: "warning",
+                buttons: ["No!", "Yes!"],
+                confirmButtonColor: '#dc3545'
+            }).then(function(result) {
+                if (result) {
+                    selectedForm.submit();
+                }
             });
         });
-    </script>    
+    });
+</script>
 @endpush
