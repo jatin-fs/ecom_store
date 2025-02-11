@@ -129,10 +129,30 @@
                 </form>
                 @endif
                 <div class="product-single__addtolinks">
-                    <a href="#" class="menu-link menu-link_us-s add-to-wishlist"><svg width="16" height="16" viewBox="0 0 20 20"
-                            fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <use href="#icon_heart" />
-                        </svg><span>Add to Wishlist</span></a>
+                    @if(Cart::instance("wishlist")->content()->Where('id',$product->id)->count()>0)
+                    <form method="POST" id="wish-list-form" action="{{ route('wishlist.remove', ['rowId' => Cart::instance('wishlist')->content()->where('id', $product->id)->first()->rowId ?? '']) }}">
+                        @csrf
+                        @method("DELETE")
+                        <a href="javascript:void(0)" class="menu-link menu-link_us-s add-to-wishlist" onclick="document.getElementById('wish-list-form').submit()" style="display: flex; justify-content: center; gap:10px; color:red;"><svg width="16" height="16" viewBox="0 0 20 20"
+                                fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#icon_heart" />
+                            </svg><span>Remove from Wishlist</span></a>
+                    </form>
+                    @else
+                    <form method="POST" id="wish-list-form" action="{{route('wishlist.add')}}">
+                        @csrf
+                        <input type="hidden" name="id" value="{{$product->id}}" />
+                        <input type="hidden" name="name" value="{{$product->name}}" />
+                        <input type="hidden" name="quantity" value="1" />
+                        <input type="hidden" name="price" value="{{$product->sale_price == '' ? $product->regular_price:$product->sale_price}}" />
+                        <a href="javascript:void(0)" class="menu-link menu-link_us-s add-to-wishlist" onclick="document.getElementById('wish-list-form').submit()" style="display: flex; justify-content: center; gap:10px;"><svg width="16" height="16" viewBox="0 0 20 20"
+                                fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#icon_heart" />
+                            </svg><span>Add To Wishlist</span>
+                        </a>
+                    </form>
+                    @endif
+
                     <share-button class="share-button">
                         <button class="menu-link menu-link_us-s to-share border-0 bg-transparent d-flex align-items-center">
                             <svg width="16" height="19" viewBox="0 0 16 19" fill="none" xmlns="http://www.w3.org/2000/svg">
