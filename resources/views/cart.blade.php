@@ -108,8 +108,27 @@
                     </tbody>
                 </table>
                 <div class="cart-table-footer">
-                    <input class="form-control" type="text" name="coupon_code" placeholder="Coupon Code">
-                    <input class="btn-link fw-medium position-absolute top-0 end-0 h-100 px-4" type="submit" value="APPLY COUPON">
+                    <div>
+                        @if(!Session::has("coupon"))
+                        <form class="position-relative bg-body" method="POST" action="{{route('cart.coupon.apply')}}">
+                            @csrf
+                            <input class="form-control" type="text" name="coupon_code" placeholder="Coupon Code">
+                            <input class="btn-link fw-medium position-absolute top-0 end-0 h-100 px-4" type="submit" value="APPLY COUPON">
+                        </form>
+                        @else
+                        <form class="position-relative bg-body" method="POST" action="{{route('cart.coupon.remove')}}">
+                            @csrf
+                            @method('DELETE')
+                            <input class="form-control fw-bold" type="text" name="coupon_code" placeholder="Coupon Code" value="{{session()->get('coupon')['code']}} Applied!" readonly>
+                            <input class="btn-link fw-medium position-absolute top-0 end-0 h-100 px-4" type="submit" style="color:#ff1400;" value="REMOVE COUPON">
+                        </form>
+                        @endif
+                        @if(Session::has('success'))
+                        <p style="color:#3fe804;">{{Session::get('success')}}</p>
+                        @elseif(Session::has('error'))
+                        <p style="color: #ff1400;">{{Session::get('error')}}</p>
+                        @endif
+                    </div>
                     <form class="position-relative bg-body" method="POST" action="{{route('cart.empty')}}">
                         @csrf
                         @method('DELETE')
@@ -121,6 +140,36 @@
                 <div class="sticky-content">
                     <div class="shopping-cart__totals">
                         <h3>Cart Totals</h3>
+                        @if(Session::has('discounts'))
+                        <table class="cart-totals">
+                            <tbody>
+                                <tr>
+                                    <th>Subtotal</th>
+                                    <td>${{Cart::instance('cart')->subtotal()}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Discount {{Session("coupon")["code"]}}</th>
+                                    <td>-${{Session("discounts")["discount"]}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Subtotal After Discount</th>
+                                    <td>${{Session("discounts")["subtotal"]}}</td>
+                                </tr>
+                                <tr>
+                                    <th>SHIPPING</th>
+                                    <td class="text-right">Free</td>
+                                </tr>
+                                <tr>
+                                    <th>VAT</th>
+                                    <td>${{Session("discounts")["tax"]}}</td>
+                                </tr>
+                                <tr class="cart-total">
+                                    <th>Total</th>
+                                    <td>${{Session("discounts")["total"]}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        @else
                         <table class="cart-totals">
                             <tbody>
                                 <tr>
@@ -141,6 +190,7 @@
                                 </tr>
                             </tbody>
                         </table>
+                        @endif
                     </div>
                     <div class="mobile_fixed-btn_wrapper">
                         <div class="button-wrapper container">
