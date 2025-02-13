@@ -22,16 +22,6 @@ Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
 Route::get('/shop/{product_slug}', [ShopController::class, 'product_details'])->name("shop.product.details");
 
 
-
-
-
-
-Route::middleware('auth')->group(function () {
-    Route::get('/account-dashboard', [UserController::class, 'index'])->name('user.index');
-});
-
-
-
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
 Route::put('/cart/increase-qunatity/{rowId}', [CartController::class, 'increase_item_quantity'])->name('cart.increase.qty');
@@ -55,6 +45,8 @@ Route::delete('/wishlist/remove/{rowId}', [WishlistController::class, 'remove_it
 Route::delete('/wishlist/clear', [WishlistController::class, 'empty_wishlist'])->name('wishlist.empty');
 Route::post('/wishlist/move-to-cart/{rowId}', [WishlistController::class, 'move_to_cart'])->name('wishlist.move.to.cart');
 
+
+// Admin auth Routes
 Route::middleware('auth', AuthAdmin::class)->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
 
@@ -88,4 +80,12 @@ Route::middleware('auth', AuthAdmin::class)->group(function () {
 
     Route::get('/admin/orders', [AdminController::class, 'orders'])->name('admin.orders');
     Route::get('/admin/order/items/{order_id}', [AdminController::class, 'order_items'])->name('admin.order.items');
+});
+
+
+//User Auth Routes
+Route::middleware('auth')->group(function () {
+    Route::get('/account-dashboard', [UserController::class, 'index'])->name('user.index');
+    Route::get('/account-orders', [UserController::class, 'account_orders'])->name('user.account.orders');
+    Route::get('/account-order-detials/{order_id}', [UserController::class, 'account_order_details'])->name('user.acccount.order.details');
 });
