@@ -223,7 +223,14 @@
                     </div>
                 </div>
             </div>
-
+            <div class="wg-box mt-5 text-right">
+                <form action="{{route('user.account_cancel_order')}}" method="POST">
+                    @csrf
+                    @method("PUT")
+                    <input type="hidden" name="order_id" value="{{$order->id}}" />
+                    <button type="submit" class="btn btn-danger">Cancel Order</button>
+                </form>
+            </div>
         </div>
     </section>
 </main>
