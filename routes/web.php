@@ -16,6 +16,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home.index');
 Route::get('/home', function () {
     return redirect()->route('home.index');
 });
+Route::get('/contact', [HomeController::class, 'contact'])->name('home.contact');
 
 
 Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');

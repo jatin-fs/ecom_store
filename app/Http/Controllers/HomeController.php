@@ -18,4 +18,8 @@ class HomeController extends Controller
         $fproducts=Product::where('featured','1')->get()->take(8);
         return view('index', compact('slides', 'categories','sproducts','fproducts'));
     }
+
+    public function contact(){
+        return view('contact');
+    }
 }
